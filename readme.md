@@ -175,7 +175,8 @@ export const pageQuery = graphql`
 
 Visit your dev site again and look at all the content. Refresh it a few times and look how fast it is! That's because it's just basically HTML.
 
-![rocket](https://giphy.com/gifs/rocket-snail-SQgbkziuGrNxS)
+![rocket](https://media.giphy.com/media/SQgbkziuGrNxS/giphy.gif)
+
 (I am not referring to WordPress as a snail!)
 
 ## Step 5
