@@ -181,11 +181,100 @@ Visit your dev site again and look at all the content. Refresh it a few times an
 
 ## Step 5
 
-Learn about Router and links
+Let's start looking at actually reading full blog posts. This is where we really dig into the power of Gatsby as a static generator. Open your `gatsby-node.js` and replace with the following:
 
-## Step 6
+```
+const path = require(`path`)
+exports.createPages = ({ graphql, actions }) => {
+  const { createPage } = actions
+  return graphql(`
+    {
+      allWordpressPost(sort: { fields: [date] }) {
+        edges {
+          node {
+            title
+            excerpt
+            content
+            slug
+          }
+        }
+      }
+    }
+  `).then(result => {
+    result.data.allWordpressPost.edges.forEach(({ node }) => {
+      createPage({
+        path: node.slug,
+        component: path.resolve(`./src/templates/blog-post.js`),
+        context: {
+          // This is the $slug variable
+          // passed to blog-post.js
+          slug: node.slug,
+        },
+      })
+    })
+  })
+}
+```
 
-Link up the posts
+This basically tells Gatsby to go and fetch all the WordPress posts and generate a page for them in your build. Now before we get excited, we need to create a template for the post to use (you can see it referenced in the code). Create a new folder in `src` called `template` and create a file called `blog-post.js`. You can put the following code inside of it:
+
+```
+import React from "react"
+import Layout from "../components/layout"
+import { graphql } from "gatsby"
+export default ({ data }) => {
+  const post = data.allWordpressPost.edges[0].node
+  console.log(post)
+  return (
+    <Layout>
+      <div>
+        <h1>{post.title}</h1>
+        <div dangerouslySetInnerHTML={{ __html: post.content }} />
+      </div>
+    </Layout>
+  )
+}
+export const query = graphql`
+  query($slug: String!) {
+    allWordpressPost(filter: { slug: { eq: $slug } }) {
+      edges {
+        node {
+          title
+          content
+        }
+      }
+    }
+  }
+`
+```
+
+Lastly, let's link to these posts from the home page to actually make our blog useful. Open up `src/pages/index.js` again and replace
+
+`import { graphql } from "gatsby"`
+
+with
+
+`import { Link, graphql } from "gatsby"`
+
+and replace
+
+`<p>{node.title}</p>`
+
+with
+
+```
+<Link to={node.slug}>
+  <p>{node.title}</p>
+</Link>
+```
+
+Go ahead and restart the process again. `ctrl + c` and then `gatsby develop`. Then back in your browser you should now be able to open links to each blog post (#protip: click the text in the header to go back home).
+
+![cooool](https://media.giphy.com/media/nFFguNjdeotwc/giphy.gif)
+
+# Step 6
+
+Images
 
 ## Step 7
 
@@ -204,5 +293,9 @@ Create a taxonomy template
 Pagination
 
 ## Step 11
+
+Make it look nice
+
+## Step 12
 
 Deployment with Netlify
