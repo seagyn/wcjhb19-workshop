@@ -10,6 +10,8 @@ It's very important that each of these are in a working state as it can severly 
 - Gatsby CLI - Run `npm install -g gatsby-cli` to install. Please run `gatsby-cli info` to verify that it works.
 - A WordPress site - Get a free one at [QueryWP](https://querywp.com/wcjhb). Make sure http://yourdomain.com/wp/wp-json/v2/ shows you something.
 - IDE - [VS Code](https://code.visualstudio.com/), [Sublime Text 2](https://www.sublimetext.com/) or whatever you prefer.
+- A free [Netlify](https://www.netlify.com/) account. 
+- A free [Github](https://github.com/) account. 
 
 ## Step 1
 
@@ -163,6 +165,7 @@ export const pageQuery = graphql`
     allWordpressPost {
       edges {
         node {
+          wordpress_id
           title
           excerpt
           slug
@@ -192,6 +195,7 @@ exports.createPages = ({ graphql, actions }) => {
       allWordpressPost(sort: { fields: [date] }) {
         edges {
           node {
+            wordpress_id
             title
             excerpt
             content
@@ -263,7 +267,7 @@ and replace
 with
 
 ```
-<Link to={node.slug}>
+<Link to={`/${node.slug}`}>
   <p>{node.title}</p>
 </Link>
 ```
@@ -274,28 +278,89 @@ Go ahead and restart the process again. `ctrl + c` and then `gatsby develop`. Th
 
 # Step 6
 
-Images
+The next step is to take all the lovely images you have and to actually store those along with your static site. At the same time, we can optimise them and only load the sizes we need (woah!). Back in terminal, stop the running process (`ctrl + c`) and run the following command:
 
-## Step 7
+`npm install --save gatsby-transformer-sharp gatsby-plugin-sharp gatsby-image`
 
-Create a page template
+Once you've done that, you can type `npm run start` again. You can then open `src/pages/index.js` and replace the following section:
 
-## Step 8
+```
+export const pageQuery = graphql`
+  query {
+    allWordpressPost {
+      edges {
+        node {
+          wordpress_id
+          title
+          excerpt
+          slug
+        }
+      }
+    }
+  }
+`
+```
 
-Create a menu and link pages
+with:
 
-## Step 9
+```
+export const pageQuery = graphql`
+  query {
+    allWordpressPost {
+      edges {
+        node {
+          wordpress_id
+          title
+          excerpt
+          slug
+          featured_media {
+            localFile {
+              childImageSharp {
+                fluid(maxWidth: 1024) {
+                  src
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`
+```
 
-Create a taxonomy template
+All we need to do now is add the image to our blog listing page. To this this, add the following code underneat the `<Link>` tag you added earlier:
 
-## Step 10
+`{node.featured_media && node.featured_media.localFile.childImageSharp && <img src={node.featured_media.localFile.childImageSharp.fluid.src} alt={node.title} title={node.title} />}`
 
-Pagination
+You should now be able to see images in your blog (if you have featured images that is!).
 
-## Step 11
-
-Make it look nice
+![looking good](https://media.giphy.com/media/2cdYrnU2YsUIOHOgiu/giphy.gif)
 
 ## Step 12
 
-Deployment with Netlify
+First, log into Github and create a repository (`+` icon on the top right). Call it whatever you like. Once you've created it, it will show a URL for, copy it.
+
+Then open your browser and top the server. You can then run the following commands one by one:
+
+```
+git init
+git remote add origin https://github.com/username/repo.git <-- replace this with your URL.
+git add .
+git commit -m "let's get this live!"
+git push origin master
+```
+
+This should push your code onto github :D 
+
+Now log into Netlify and click "New site from git", connect to Github (it should just ask for permission).
+
+In the "Build command" input, add `npm run build`.
+
+In the "Publish directory" input, add `/public`.
+
+Click save and wait.
+
+![waiting](https://media.giphy.com/media/tXL4FHPSnVJ0A/giphy.gif)
+
+After a little while, you should have a "functioning" blog. It's still missing a bunch of things and could really use a makeover but I truly hope that this sparked a little bit of interest into the world of static sites.
