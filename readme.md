@@ -8,7 +8,8 @@ It's very important that each of these are in a working state as it can severly 
 
 - NPM - [Available with Node](https://nodejs.org/en/). Please run `node --version` to verify that it works.
 - Gatsby CLI - Run `npm install -g gatsby-cli` to install. Please run `gatsby-cli info` to verify that it works.
-- A WordPress site - Get a free one at [QueryWP](https://querywp.com/) (use the beta signup and we will add you). For the site to work, make sure http://replacewiithyoururl.com/wp/wp-json/v2/ shows you something.
+- A WordPress site - Get a free headless one at QueryWP (use the beta signup and we will add you). For the site to work, make sure http://replacewithyoururl.com/wp-json/wp/v2/ shows you something.
+- If you need dummy content, you can get that [here](https://wpcom-themes.svn.automattic.com/demo/theme-unit-test-data.xml).
 - IDE - [VS Code](https://code.visualstudio.com/), [Sublime Text 2](https://www.sublimetext.com/) or whatever you prefer.
 - A free [Netlify](https://www.netlify.com/) account. 
 - A free [Github](https://github.com/) account. 
